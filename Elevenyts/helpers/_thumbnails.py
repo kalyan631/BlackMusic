@@ -1,57 +1,110 @@
+# ==============================================================================
+# _thumbnails.py - Premium Stylish Thumbnail Generator
+# ==============================================================================
+
 import os
 import re
 import asyncio
 import aiohttp
 import base64
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+
+from PIL import (
+    Image,
+    ImageDraw,
+    ImageEnhance,
+    ImageFilter,
+    ImageFont
+)
 
 from Elevenyts import config
 from Elevenyts.helpers import Track
 
+PANEL_W, PANEL_H = 763, 545
+PANEL_X = (1280 - PANEL_W) // 2
+PANEL_Y = 88
 
-def decode_text(encoded: str) -> str:
-    return base64.b64decode(encoded).decode("utf-8")
+THUMB_W, THUMB_H = 542, 273
+THUMB_X = PANEL_X + (PANEL_W - THUMB_W) // 2
+THUMB_Y = PANEL_Y + 36
 
+TITLE_X = 377
+TITLE_Y = THUMB_Y + THUMB_H + 10
 
-def trim_to_width(text: str, font: ImageFont.FreeTypeFont, max_w: int) -> str:
+META_Y = TITLE_Y + 50
+
+BAR_X, BAR_Y = 388, META_Y + 55
+
+BAR_RED_LEN = 280
+BAR_TOTAL_LEN = 480
+
+ICONS_W, ICONS_H = 415, 45
+
+ICONS_X = PANEL_X + (PANEL_W - ICONS_W) // 2
+ICONS_Y = BAR_Y + 60
+
+MAX_TITLE_WIDTH = 580
+
+_f = "QXJ0aXN0Ym90cw=="
+
+def _decode_f():
+    decoded = base64.b64decode(_f).decode('utf-8')
+    return f"✦ {decoded} ✦"
+
+def trim_to_width(text: str, font, max_w: int) -> str:
     ellipsis = "…"
+
     if font.getlength(text) <= max_w:
         return text
+
     for i in range(len(text) - 1, 0, -1):
         if font.getlength(text[:i] + ellipsis) <= max_w:
             return text[:i] + ellipsis
+
     return ellipsis
 
-
 class Thumbnail:
+
     def __init__(self):
+
         try:
             self.title_font = ImageFont.truetype(
-                "Elevenyts/helpers/Raleway-Bold.ttf", 40)
+                "Elevenyts/helpers/Raleway-Bold.ttf",
+                34
+            )
 
             self.regular_font = ImageFont.truetype(
-                "Elevenyts/helpers/Inter-Light.ttf", 22)
+                "Elevenyts/helpers/Inter-Light.ttf",
+                20
+            )
 
-            self.watermark_font = ImageFont.truetype(
-                "Elevenyts/helpers/Raleway-Bold.ttf", 72)
-
-            self.small_font = ImageFont.truetype(
-                "Elevenyts/helpers/Inter-Light.ttf", 18)
+            self.signature_font = ImageFont.truetype(
+                "Elevenyts/helpers/Raleway-Bold.ttf",
+                28
+            )
 
         except OSError:
-            self.title_font = self.regular_font = self.watermark_font = self.small_font = ImageFont.load_default()
 
-    async def save_thumb(self, output_path: str, url: str) -> str:
+            self.title_font = ImageFont.load_default()
+            self.regular_font = ImageFont.load_default()
+            self.signature_font = ImageFont.load_default()
+
+    async def save_thumb(self, output_path: str, url: str):
+
         async with aiohttp.ClientSession() as session:
+
             async with session.get(url) as resp:
+
                 with open(output_path, "wb") as f:
                     f.write(await resp.read())
+
         return output_path
 
     async def generate(self, song: Track, size=(1280, 720)) -> str:
+
         try:
+
             temp = f"cache/temp_{song.id}.jpg"
-            output = f"cache/{song.id}_modern.png"
+            output = f"cache/{song.id}_premium.png"
 
             if os.path.exists(output):
                 return output
@@ -59,108 +112,136 @@ class Thumbnail:
             await self.save_thumb(temp, song.thumbnail)
 
             return await asyncio.get_event_loop().run_in_executor(
-                None, self._generate_sync, temp, output, song, size
+                None,
+                self._generate_sync,
+                temp,
+                output,
+                song,
+                size
             )
 
         except Exception:
             return config.DEFAULT_THUMB
 
-    def _generate_sync(self, temp: str, output: str, song: Track, size=(1280, 720)) -> str:
+    def _generate_sync(
+        self,
+        temp: str,
+        output: str,
+        song: Track,
+        size=(1280, 720)
+    ) -> str:
+
         try:
+
             with Image.open(temp) as temp_img:
                 base = temp_img.resize(size).convert("RGBA")
 
-            bg = Image.new("RGBA", size, (0, 0, 0, 255))
-            bg.paste(base, (0, 0), base)
-            bg = bg.filter(ImageFilter.GaussianBlur(2))
+            bg = base.filter(ImageFilter.GaussianBlur(20))
+            bg = ImageEnhance.Brightness(bg).enhance(0.30)
+            bg = ImageEnhance.Contrast(bg).enhance(1.25)
+
+            dark = Image.new("RGBA", size, (0, 0, 0, 90))
+            bg = Image.alpha_composite(bg, dark)
+
+            panel = Image.new("RGBA", (PANEL_W, PANEL_H), (10, 10, 10, 170))
+            border = Image.new("RGBA", (PANEL_W, PANEL_H), (0, 0, 0, 0))
+            bd = ImageDraw.Draw(border)
+
+            bd.rounded_rectangle(
+                (0, 0, PANEL_W - 1, PANEL_H - 1),
+                radius=38,
+                outline=(0, 255, 255, 220),
+                width=4
+            )
+
+            mask = Image.new("L", (PANEL_W, PANEL_H), 0)
+            ImageDraw.Draw(mask).rounded_rectangle(
+                (0, 0, PANEL_W, PANEL_H),
+                radius=38,
+                fill=255
+            )
+
+            panel = Image.alpha_composite(panel, border)
+            bg.paste(panel, (PANEL_X, PANEL_Y), mask)
+
             draw = ImageDraw.Draw(bg)
 
-            _a = decode_text("QVJUSVNU")
-            _b = decode_text("QVJUSVNUQk9UUw==")
+            draw.text(
+                (25, 20),
+                _decode_f(),
+                fill=(255, 255, 255, 230),
+                font=self.signature_font
+            )
 
-            colors = [(255, 0, 150), (0, 200, 255), (255, 200, 0)]
+            thumb = base.resize((THUMB_W, THUMB_H))
+            tmask = Image.new("L", thumb.size, 0)
+            ImageDraw.Draw(tmask).rounded_rectangle(
+                (0, 0, THUMB_W, THUMB_H),
+                radius=24,
+                fill=255
+            )
 
-            x1, y1 = 40, 30
-            w1 = self.watermark_font.getlength(_a)
-            h1 = self.watermark_font.size
+            bg.paste(thumb, (THUMB_X, THUMB_Y), tmask)
 
             draw.rounded_rectangle(
-                [x1 - 20, y1 - 10, x1 + w1 + 20, y1 + h1 + 10],
-                radius=20,
-                fill=(0, 0, 0, 200)
+                (THUMB_X - 2, THUMB_Y - 2, THUMB_X + THUMB_W + 2, THUMB_Y + THUMB_H + 2),
+                radius=26,
+                outline=(0, 255, 255),
+                width=3
             )
 
-            cx = x1
-            for i, char in enumerate(_a):
-                draw.text((cx, y1), char, font=self.watermark_font, fill=colors[i % 3])
-                cx += self.watermark_font.getlength(char)
+            clean_title = re.sub(r"\W+", " ", song.title).title()
+            final_title = trim_to_width(clean_title, self.title_font, MAX_TITLE_WIDTH)
 
-            w2 = self.watermark_font.getlength(_b)
-            h2 = self.watermark_font.size
+            draw.text((TITLE_X + 2, TITLE_Y + 2), final_title, fill=(0, 0, 0), font=self.title_font)
+            draw.text((TITLE_X, TITLE_Y), final_title, fill=(255, 255, 255), font=self.title_font)
 
-            x2 = 1280 - w2 - 5
-            y2 = 720 - h2 - 5
+            meta_text = f"Now Playing  •  YouTube  •  {song.view_count or 'Unknown Views'}"
+            draw.text((TITLE_X, META_Y), meta_text, fill=(180, 180, 180), font=self.regular_font)
 
             draw.rounded_rectangle(
-                [x2 - 20, y2 - 10, x2 + w2 + 20, y2 + h2 + 10],
-                radius=20,
-                fill=(0, 0, 0, 200)
+                (BAR_X, BAR_Y - 4, BAR_X + BAR_TOTAL_LEN, BAR_Y + 4),
+                radius=10,
+                fill=(55, 55, 55)
             )
 
-            cx = x2
-            for i, char in enumerate(_b):
-                draw.text((cx, y2), char, font=self.watermark_font, fill=colors[i % 3])
-                cx += self.watermark_font.getlength(char)
-
-            gradient = Image.new("L", (1, 300))
-            for i in range(300):
-                gradient.putpixel((0, i), int(255 * (i / 300)))
-
-            alpha = gradient.resize((1280, 300))
-            black_overlay = Image.new("RGBA", (1280, 300), (0, 0, 0, 200))
-            black_overlay.putalpha(alpha)
-
-            bg.paste(black_overlay, (0, 420), black_overlay)
-
-            thumb = base.resize((180, 180))
-            mask = Image.new("L", thumb.size, 0)
-            ImageDraw.Draw(mask).rounded_rectangle((0, 0, 180, 180), 25, fill=255)
-            bg.paste(thumb, (60, 450), mask)
-
-            title = re.sub(r"\W+", " ", song.title).title()
-
-            draw.text(
-                (260, 470),
-                trim_to_width(title, self.title_font, 800),
-                fill="white",
-                font=self.title_font
+            draw.rounded_rectangle(
+                (BAR_X, BAR_Y - 4, BAR_X + BAR_RED_LEN, BAR_Y + 4),
+                radius=10,
+                fill=(0, 255, 255)
             )
 
+            draw.ellipse(
+                (BAR_X + BAR_RED_LEN - 10, BAR_Y - 10, BAR_X + BAR_RED_LEN + 10, BAR_Y + 10),
+                fill=(0, 255, 255)
+            )
+
+            draw.text((BAR_X, BAR_Y + 18), "00:00", fill="white", font=self.regular_font)
+
+            is_live = getattr(song, "is_live", False)
+            end_text = "LIVE" if is_live else song.duration
+
             draw.text(
-                (260, 530),
-                f"YouTube • {song.view_count or 'Unknown'}",
-                fill="lightgray",
+                (BAR_X + BAR_TOTAL_LEN - 75, BAR_Y + 18),
+                end_text,
+                fill=(0, 255, 255) if is_live else "white",
                 font=self.regular_font
             )
 
-            draw.line([(260, 600), (760, 600)], fill="gray", width=5)
-            draw.line([(260, 600), (480, 600)], fill="red", width=6)
+            icons_path = "Elevenyts/helpers/play_icons.png"
 
-            draw.ellipse([(472, 592), (488, 608)], fill="red")
-
-            draw.text((260, 615), "00:00", fill="white", font=self.small_font)
-            draw.text(
-                (700, 615),
-                getattr(song, 'duration', '00:00'),
-                fill="white",
-                font=self.small_font
-            )
+            if os.path.isfile(icons_path):
+                with Image.open(icons_path) as icons_img:
+                    ic = icons_img.resize((ICONS_W, ICONS_H)).convert("RGBA")
+                    r, g, b, a = ic.split()
+                    cyan_ic = Image.merge("RGBA", (r.point(lambda _: 0), g.point(lambda _: 255), b.point(lambda _: 255), a))
+                    bg.paste(cyan_ic, (ICONS_X, ICONS_Y), cyan_ic)
 
             bg.save(output)
 
             try:
                 os.remove(temp)
-            except:
+            except OSError:
                 pass
 
             return output

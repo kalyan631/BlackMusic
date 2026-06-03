@@ -14,7 +14,7 @@
   
 </div>
 
-<img src="https://readme-typing-svg.herokuapp.com?color=FF0000&width=420&lines=𝗙𝗢𝗥𝗞+𝗔𝗥𝗧𝗜𝗦𝗧+𝗠𝗨𝗦𝗜𝗖+𝗥𝗘𝗣𝗢+𝗕𝗘𝗙𝗢𝗥𝗘+𝗗𝗘𝗣𝗟𝗢𝗬">
+<img src="https://readme-typing-svg.herokuapp.com?color=FF0000&width=420&lines=𝗙𝗢𝗥𝗞+𝗕𝗟𝗔𝗖𝗞+𝗠𝗨𝗦𝗜𝗖+𝗥𝗘𝗣𝗢+𝗕𝗘𝗙𝗢𝗥𝗘+𝗗𝗘𝗣𝗟𝗢𝗬">
 
 ---
 <h2 align="center">🚀 𝗗𝗘𝗣𝗟𝗢𝗬 𝗙𝗥𝗘𝗘 𝗢𝗡 𝗥𝗘𝗡𝗗𝗘𝗥 🚀</h2>
@@ -40,7 +40,7 @@
 </p>
 ---
 
-- **Telegram Channel**: [BLACK](https://t.me/Revenge_mode)
+- **Telegram Channel**: [𝗕𝗟𝗔𝗖𝗞](https://t.me/Revenge_mode)
 - **Support Group**: [Elevenyts Music](https://t.me/) 
 
 ---
@@ -55,7 +55,7 @@
 
 <div align="center">
   
-  ### Made with ❤️ by BLACK
+  ### Made with ❤️ by 𝗕𝗟𝗔𝗖𝗞
   
   **© 2026 ˹Qᴜᴇᴇɴ💗 Aɴᴜꜱʜᴋᴀ Mᴜꜱɪᴄ˼ . All rights reserved.**
   

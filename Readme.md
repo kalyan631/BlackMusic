@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://files.catbox.moe/zlmv6v.png" alt="˹ᴀʀᴛɪꜱᴛ ᴍᴜꜱɪᴄ˼" width="400"/>
   
-  # 🎵 ˹ᴀʀᴛɪꜱᴛ ᴍᴜꜱɪᴄ˼
+  # 🎵 ˹Qᴜᴇᴇɴ💗 Aɴᴜꜱʜᴋᴀ Mᴜꜱɪᴄ˼ 
 
 </h2>
 
@@ -55,8 +55,8 @@
 
 <div align="center">
   
-  ### Made with ❤️ by Artist 
+  ### Made with ❤️ by BLACK
   
-  **© 2026 ˹ᴀʀᴛɪꜱᴛ ᴍᴜꜱɪᴄ˼. All rights reserved.**
+  **© 2026 ˹Qᴜᴇᴇɴ💗 Aɴᴜꜱʜᴋᴀ Mᴜꜱɪᴄ˼ . All rights reserved.**
   
 </div>

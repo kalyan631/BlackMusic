@@ -36,7 +36,7 @@
 <h2 align="center">
 
 「 𝗜𝗙 𝗔𝗡𝗬 𝗘𝗥𝗥𝗢𝗥 𝗧𝗛𝗘𝗡 𝗦𝗘𝗡𝗗 𝗦𝗦 𝗧𝗢 𝗗𝗠 」
-[![ARTIST](https://files.catbox.moe/kcnahh.png)](https://t.me/Artistbots)
+[![ARTIST](https://files.catbox.moe/iv2w0d.jpg)](https://t.me/Revenge_mode)
 </p>
 ---
 

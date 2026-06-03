@@ -40,8 +40,8 @@
 </p>
 ---
 
-- **Telegram Channel**: [Artist bots](https://t.me/Artistbots)
-- **Support Group**: [Elevenyts Music](https://t.me/elevenytsmusic) 
+- **Telegram Channel**: [BLACK](https://t.me/Revenge_mode)
+- **Support Group**: [Elevenyts Music](https://t.me/) 
 
 ---
 
